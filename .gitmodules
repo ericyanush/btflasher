@@ -1,0 +1,3 @@
+[submodule "serial"]
+	path = serial
+	url = https://ericyanush@github.com/ericyanush/serial.git
