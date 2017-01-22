@@ -15,7 +15,9 @@ ExternalProject_Add(libavrdude
         BUILD_COMMAND ${MAKE})
 
 ExternalProject_Get_Property(libavrdude install_dir)
+ExternalProject_Get_Property(libavrdude binary_dir)
 include_directories(${install_dir}/include)
+include_directories(${binary_dir})
 
 add_subdirectory("serial")
 include_directories("serial/include")
