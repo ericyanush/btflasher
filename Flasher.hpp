@@ -64,7 +64,7 @@ public:
 
     std::vector<std::string> logMessages();
 
-    void flash();
+    bool flash();
 
 private:
     /// avrdude options
@@ -79,7 +79,7 @@ private:
 
     /// avrdude callbacks
     static std::function<void(int, bool, bool)> progressCB;
-    static void progressHandler(int, bool, bool);
+    static void progressHandler(int, double, char*);
 
     std::vector<std::string> messages;
     void logMessageHandler(std::string);
@@ -89,7 +89,7 @@ private:
 
     bool programmerWasSetup = false;
 
-    void failWithError(std::string);
+    bool failWithError(std::string);
 };
 
 

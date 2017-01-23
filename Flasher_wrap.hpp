@@ -50,6 +50,7 @@ private:
     static void GetLogMessages(const Nan::FunctionCallbackInfo<v8::Value>& info);
 
     static void FlashJobRunner(uv_work_t *request);
+    static void FlashJobMsgSend(uv_async_t* asyncHandle);
     static void FlashJobComplete(uv_work_t *request, int status);
 };
 

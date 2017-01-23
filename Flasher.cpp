@@ -8,6 +8,8 @@
 #include <functional>
 #include "Flasher.hpp"
 
+std::function<void(int,bool,bool)> Flasher::progressCB;
+
 /// Global vars used by libavrdude
 extern "C" {
 
@@ -138,15 +140,17 @@ void Flasher::progressCallback(std::function<void(int, bool, bool)> callback) {
     progressCB = callback;
 }
 
-void Flasher::progressHandler(int percentComp, bool done, bool success) {
-    progressCB(percentComp, done, success);
+void Flasher::progressHandler(int percentComp, double etime, char* header) {
+    progressCB(percentComp, false, false);
 }
 
 std::vector<std::string> Flasher::logMessages() {
     return messages;
 }
 
-void Flasher::flash() {
+bool Flasher::flash() {
+
+    update_progress = progressHandler;
 
     //get the programmer
     progrmr = locate_programmer(programmers, programmerType.c_str());
@@ -218,7 +222,7 @@ void Flasher::flash() {
     progrmr->disable(progrmr);
     progrmr->close(progrmr);
 
-    progressHandler(100, true, !updateRC && !verifyRC);
+    return (!updateRC && !verifyRC);
 }
 
 
@@ -226,7 +230,8 @@ void Flasher::logMessageHandler(std::string message) {
     messages.push_back(message);
 }
 
-void Flasher::failWithError(std::string error) {
+bool Flasher::failWithError(std::string error) {
     messages.push_back(error);
-    return progressHandler(0, true, false);
+    progressCB(0, true, false);
+    return false;
 }

@@ -6,6 +6,9 @@
 //
 
 #include "Flasher_wrap.hpp"
+#include <iostream>
+#include <mutex>
+#include <thread>
 
 Nan::Persistent<v8::Function> FlasherWrap::constructor;
 
@@ -241,8 +244,14 @@ void FlasherWrap::GetLogMessages(const Nan::FunctionCallbackInfo<v8::Value> &inf
 
 struct FlashJob {
     uv_work_t request;
+    uv_async_t async;
     Nan::Persistent<v8::Function> callback;
+    std::mutex callbackLock;
     Flasher* flasher;
+    std::atomic<bool> pendingCallback;
+    std::atomic<int> percComplete;
+    std::atomic<bool> done;
+    std::atomic<bool> success;
 };
 
 void FlasherWrap::Flash(const Nan::FunctionCallbackInfo<v8::Value> &info) {
@@ -263,6 +272,8 @@ void FlasherWrap::Flash(const Nan::FunctionCallbackInfo<v8::Value> &info) {
     FlashJob* job = new FlashJob();
     job->request.data = job;
     job->flasher = wrapper->flasher;
+    job->async.data = job;
+    uv_async_init(uv_default_loop(), &job->async, FlashJobMsgSend);
 
     v8::Local<v8::Function> callback = info[0].As<v8::Function>();
     job->callback.Reset(callback);
@@ -276,21 +287,50 @@ void FlasherWrap::FlashJobRunner(uv_work_t *request) {
     FlashJob* job = static_cast<FlashJob*>(request->data);
 
     std::function<void(int, bool, bool)> progressHandler = [job] (int percent, bool done, bool success) {
-        v8::Local<v8::Value> argv[] = { Nan::New(percent), Nan::New(done), Nan::New(success) };
 
-        v8::Local<v8::Function> cb = Nan::New(job->callback);
-        Nan::MakeCallback(Nan::GetCurrentContext()->Global(), cb, 1, argv);
+        job->callbackLock.lock();
+        job->percComplete = percent;
+        job->done = done;
+        job->success = success;
+        job->pendingCallback = true;
+        job->callbackLock.unlock();
+        uv_async_send(&(job->async));
     };
 
     job->flasher->progressCallback(progressHandler);
 
-    job->flasher->flash();
+    bool success = job->flasher->flash();
+
+    progressHandler(job->percComplete, true, success);
+
+    // wait until there are no pending callbacks
+    while (job->pendingCallback == true) {  }
+}
+
+void FlasherWrap::FlashJobMsgSend(uv_async_t *asyncHandle) {
+
+    FlashJob* job = static_cast<FlashJob*>(asyncHandle->data);
+
+    job->callbackLock.lock();
+
+    Nan::HandleScope scope;
+
+    v8::Local<v8::Value> argv[] = { Nan::New(job->percComplete),
+                                    Nan::New(job->done),
+                                    Nan::New(job->success) };
+
+    v8::Local<v8::Function> cb = Nan::New(job->callback);
+    Nan::MakeCallback(Nan::GetCurrentContext()->Global(), cb, 3, argv);
+
+    job->pendingCallback = false;
+    job->callbackLock.unlock();
 }
 
 void FlasherWrap::FlashJobComplete(uv_work_t *request, int status) {
     Nan::HandleScope scope;
 
     FlashJob* job = static_cast<FlashJob*>(request->data);
+    request->data = nullptr;
 
     job->callback.Reset();
 
