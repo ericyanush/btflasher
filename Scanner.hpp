@@ -8,31 +8,47 @@
 #ifndef BREWTROLLER_FLASHER_SCANNER_HPP
 #define BREWTROLLER_FLASHER_SCANNER_HPP
 
-#ifdef  __cplusplus
-extern "C" {
-#endif
+#include <string>
+#include <vector>
 
-    struct BrewTrollerInfo {
-        const char* version;
-        bool usesMetric;
-    };
-
-    struct Port {
-        /// @property Serial Port Name, contents is dependant on OS
-        const char* name;
-
-        BrewTrollerInfo* btInfo;
-    };
-
-    /// Enumerate all serial ports
-    /// @param Pointer that will point to array of discovered ports
-    /// @returns The number of ports found
-    int enumerate_serial_ports(Port*);
-
-
-#ifdef __cplusplus
+struct BrewTrollerInfo {
+    std::string version;
+    bool usesMetric;
+    bool positiveID;
 };
-#endif
+
+struct Port {
+    /// @property Serial Port Name, contents is dependant on OS
+    std::string name;
+
+    BrewTrollerInfo btInfo;
+};
+
+class Scanner {
+public:
+    static std::vector<Port> enumerate_serial_ports();
+
+private:
+    const static int btBaudRate = 115200;
+    const static int scanTimeoutMS = 4000;
+
+    // Timestamp, SYS, VER, Version String, Build(not used), Protocol Type, COM Schema, Metric Units
+    const static std::string idRegex;
+    enum IdPos {
+        wholeMatch,
+        timestamp,
+        sysStr,
+        verStr,
+        version,
+        build,
+        protocol,
+        schemaVer,
+        metric
+    };
+
+    static BrewTrollerInfo detect_brewtroller(std::string portName);
+};
+
 
 
 #endif //BREWTROLLER_FLASHER_SCANNER_HPP
