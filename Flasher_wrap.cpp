@@ -255,8 +255,6 @@ struct FlashJob {
 };
 
 void FlasherWrap::Flash(const Nan::FunctionCallbackInfo<v8::Value> &info) {
-    Nan::HandleScope scope;
-
     FlasherWrap* wrapper = Nan::ObjectWrap::Unwrap<FlasherWrap>(info.Holder());
 
     if (info.Length() != 1) {
@@ -307,12 +305,11 @@ void FlasherWrap::FlashJobRunner(uv_work_t *request) {
 }
 
 void FlasherWrap::FlashJobMsgSend(uv_async_t *asyncHandle) {
+    Nan::HandleScope scope;
 
     FlashJob* job = static_cast<FlashJob*>(asyncHandle->data);
 
     job->callbackLock.lock();
-
-    Nan::HandleScope scope;
 
     v8::Local<v8::Value> argv[] = { Nan::New(job->percComplete),
                                     Nan::New(job->done),
