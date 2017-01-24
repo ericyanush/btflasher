@@ -245,7 +245,7 @@ void FlasherWrap::GetLogMessages(const Nan::FunctionCallbackInfo<v8::Value> &inf
 struct FlashJob {
     uv_work_t request;
     uv_async_t async;
-    Nan::Persistent<v8::Function> callback;
+    Nan::Callback callback;
     std::mutex callbackLock;
     Flasher* flasher;
     std::atomic<bool> pendingCallback;
@@ -275,8 +275,7 @@ void FlasherWrap::Flash(const Nan::FunctionCallbackInfo<v8::Value> &info) {
     job->async.data = job;
     uv_async_init(uv_default_loop(), &job->async, FlashJobMsgSend);
 
-    v8::Local<v8::Function> callback = info[0].As<v8::Function>();
-    job->callback.Reset(callback);
+    job->callback.SetFunction(info[0].As<v8::Function>());
 
     uv_queue_work(uv_default_loop(), &job->request, FlashJobRunner, FlashJobComplete);
 
@@ -319,8 +318,7 @@ void FlasherWrap::FlashJobMsgSend(uv_async_t *asyncHandle) {
                                     Nan::New(job->done),
                                     Nan::New(job->success) };
 
-    v8::Local<v8::Function> cb = Nan::New(job->callback);
-    Nan::MakeCallback(Nan::GetCurrentContext()->Global(), cb, 3, argv);
+    job->callback.Call(3, argv);
 
     job->pendingCallback = false;
     job->callbackLock.unlock();
