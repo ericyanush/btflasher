@@ -244,7 +244,7 @@ void FlasherWrap::GetLogMessages(const Nan::FunctionCallbackInfo<v8::Value> &inf
 
 struct FlashJob {
     uv_work_t request;
-    uv_async_t async;
+    uv_async_t* async;
     Nan::Callback callback;
     std::mutex callbackLock;
     Flasher* flasher;
@@ -268,14 +268,15 @@ void FlasherWrap::Flash(const Nan::FunctionCallbackInfo<v8::Value> &info) {
     }
 
     FlashJob* job = new FlashJob();
+    job->async = new uv_async_t;
     job->request.data = job;
     job->flasher = wrapper->flasher;
-    job->async.data = job;
-    uv_async_init(uv_default_loop(), &job->async, FlashJobMsgSend);
+    job->async->data = job;
+    uv_async_init(uv_default_loop(), job->async, FlashJobMsgSend);
 
     job->callback.SetFunction(info[0].As<v8::Function>());
 
-    uv_queue_work(uv_default_loop(), &job->request, FlashJobRunner, FlashJobComplete);
+    uv_queue_work(uv_default_loop(), &(job->request), FlashJobRunner, FlashJobComplete);
 
     info.GetReturnValue().Set(Nan::Undefined());
 }
@@ -284,18 +285,16 @@ void FlasherWrap::FlashJobRunner(uv_work_t *request) {
     FlashJob* job = static_cast<FlashJob*>(request->data);
 
     std::function<void(int, bool, bool)> progressHandler = [job] (int percent, bool done, bool success) {
-
         job->callbackLock.lock();
         job->percComplete = percent;
         job->done = done;
         job->success = success;
         job->pendingCallback = true;
         job->callbackLock.unlock();
-        uv_async_send(&(job->async));
+        uv_async_send(job->async);
     };
 
     job->flasher->progressCallback(progressHandler);
-
     bool success = job->flasher->flash();
 
     progressHandler(job->percComplete, true, success);
@@ -325,7 +324,11 @@ void FlasherWrap::FlashJobComplete(uv_work_t *request, int status) {
     Nan::HandleScope scope;
 
     FlashJob* job = static_cast<FlashJob*>(request->data);
+
     request->data = nullptr;
+
+    uv_close((uv_handle_t*)job->async, NULL);
+    delete job->async;
 
     job->callback.Reset();
 
