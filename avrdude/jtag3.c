@@ -31,8 +31,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
+#ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
+#endif
 #include <time.h>
 
 #include "avrdude.h"
@@ -1317,7 +1321,7 @@ int jtag3_open_common(PROGRAMMER * pgm, char * port)
 #if !defined(HAVE_LIBUSB)
   avrdude_message(MSG_INFO, "avrdude was compiled without usb support.\n");
   return -1;
-#endif
+#else
 
   if (strncmp(port, "usb", 3) != 0) {
     avrdude_message(MSG_INFO, "%s: jtag3_open_common(): JTAGICE3/EDBG port names must start with \"usb\"\n",
@@ -1376,6 +1380,7 @@ int jtag3_open_common(PROGRAMMER * pgm, char * port)
   jtag3_drain(pgm, 0);
 
   return 0;
+#endif
 }
 
 

@@ -49,7 +49,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <inttypes.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 
 #include "avrdude.h"
 #include "libavrdude.h"

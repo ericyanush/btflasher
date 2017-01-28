@@ -41,10 +41,21 @@ int avrdude_message(const int msglvl, const char *format, ...);
 
 #include "ac_cfg.h"
 #include <windows.h>
+#include <io.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#define isatty _isatty
+#define fileno _fileno
+
+#define strdup _strdup
+
+#define PATH_MAX MAX_PATH
+
+#define strcasecmp _stricmp
+#define strncasecmp _strnicmp
 
 #if !defined(HAVE_USLEEP)
 int usleep(unsigned int us);

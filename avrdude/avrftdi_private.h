@@ -15,8 +15,12 @@
 #elif defined(HAVE_LIBFTDI) && defined(HAVE_USB_H)
 /* ftdi.h includes usb.h */
 #include <ftdi.h>
-#else 
+#else
+#if defined(WIN32NATIVE)
+#pragma message("No libftdi or libusb support. Install libftdi1/libusb-1.0 or libftdi/libusb and run configure/make again.")
+#else
 #warning No libftdi or libusb support. Install libftdi1/libusb-1.0 or libftdi/libusb and run configure/make again.
+#endif
 #define DO_NOT_BUILD_AVRFTDI
 #endif
 

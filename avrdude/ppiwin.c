@@ -39,10 +39,13 @@ reg = register as defined in an enum in ppi.h. This must be converted
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 #include <windows.h>
+#ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
-#include <windows.h>
+#endif
 
 #include "avrdude.h"
 #include "libavrdude.h"
@@ -317,10 +320,11 @@ static unsigned char reg2offset(int reg)
 static unsigned char inb(unsigned short port)
 {
     unsigned char t;
-    
-	asm volatile ("in %1, %0"
-        : "=a" (t)
-        : "d" (port));
+
+    // We dont support parallel port flashing, and this causes vc++ to barf
+//	asm volatile ("in %1, %0"
+//        : "=a" (t)
+//        : "d" (port));
     
 	return t;
 }
@@ -329,9 +333,10 @@ static unsigned char inb(unsigned short port)
 /* Write value to port. */
 static void outb(unsigned char value, unsigned short port)
 {
-    asm volatile ("out %1, %0"
-        :
-        : "d" (port), "a" (value) );
+    // We dont support parallel port flashing, and this causes vc++ to barf
+//    asm volatile ("out %1, %0"
+//        :
+//        : "d" (port), "a" (value) );
 
     return;
 }

@@ -11,7 +11,10 @@
 #include <vector>
 #include <string>
 #include <functional>
+
+extern "C" {
 #include "libavrdude.h"
+};
 
 /**
  * Flash progress callback

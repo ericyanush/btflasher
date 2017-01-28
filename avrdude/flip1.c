@@ -28,7 +28,9 @@
 #include <string.h>
 #include <errno.h>
 #include <limits.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 
 #if HAVE_STDINT_H
 #include <stdint.h>

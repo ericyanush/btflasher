@@ -33,14 +33,18 @@
 #include <errno.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
+#ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
+#endif
 #include <sys/socket.h>
 #include <netdb.h>
 #include <netinet/in.h>
 
 #include <fcntl.h>
 #include <termios.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 
 #include "avrdude.h"
 #include "libavrdude.h"

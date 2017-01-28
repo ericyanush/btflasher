@@ -25,7 +25,9 @@
 #include <stdint.h>
 #include <string.h>
 #include <limits.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 
 #include "avrdude.h"
 #include "libavrdude.h"

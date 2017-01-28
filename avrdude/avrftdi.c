@@ -27,9 +27,13 @@
 #include <ctype.h>
 #include <string.h>
 #include <errno.h>
+#ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
+#endif
 #include <sys/types.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 #include <stdint.h>
 #include <stdarg.h>
 
@@ -757,7 +761,11 @@ static int avrftdi_open(PROGRAMMER * pgm, char *port)
 			pdata->tx_buffer_size = 1024;
 			break;
 #else
+#if defined(WIN32NATIVE)
+#pragma message("No support for 232H, use a newer libftdi, version >= 0.20")
+#else
 #warning No support for 232H, use a newer libftdi, version >= 0.20
+#endif
 #endif
 		case TYPE_4232H:
 			pdata->pin_limit = 8;

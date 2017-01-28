@@ -9,6 +9,7 @@
 #include <iostream>
 #include <mutex>
 #include <thread>
+#include <atomic>
 
 Nan::Persistent<v8::Function> FlasherWrap::constructor;
 

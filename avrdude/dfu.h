@@ -62,6 +62,7 @@ struct dfu_dev
 
 struct dfu_dev {
   // empty
+    char empty[0]; //vc++ won't allow structs with no members
 };
 
 #endif

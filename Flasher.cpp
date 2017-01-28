@@ -6,7 +6,13 @@
 //
 
 #include <functional>
+#include <stdio.h>
+#include <stdarg.h>
 #include "Flasher.hpp"
+
+extern "C" {
+#include "libavrdude.h"
+}
 
 std::function<void(int,bool,bool)> Flasher::progressCB;
 
@@ -150,7 +156,7 @@ std::vector<std::string> Flasher::logMessages() {
 
 bool Flasher::flash() {
 
-    update_progress = progressHandler;
+    update_progress = (FP_UpdateProgress)progressHandler;
 
     //get the programmer
     progrmr = locate_programmer(programmers, programmerType.c_str());
