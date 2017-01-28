@@ -1,9 +1,12 @@
 {
-  "name": "brewtroller-flasher",
+  "name": "btflasher",
   "version": "0.1.0",
-  "description": "Native module for flashing BrewTroller Boards",
+  "description": "Native node module for flashing BrewTroller Boards",
   "dependencies": {
     "cmake-js": "^3.4.0",
     "nan": "^2.5.0"
+  },
+  "scripts": {
+    "install": "cmake-js compile"
   }
 }
