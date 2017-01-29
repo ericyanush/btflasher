@@ -1,0 +1,45 @@
+os: Visual Studio 2015
+
+environment:
+  NODE_PRE_GYP_GITHUB_TOKEN:
+    secure: AV/BkHKfZKFyN0t/bdgA2pCgCnwp+mdZnEj/7xVVK0wtlNYeOPYIOViLG50nCrLR
+
+matrix:
+  # node.js
+  - nodejs_version: "7.4.0"
+    cmake-runtime: "node"
+    runtime-version: "7.4.0"
+    gyp-runtime: "node"
+  # Node Webkit
+  - nwjs_version: "0.20.0"
+    cmake-runtime: "nw"
+    runtime-version: "0.20.0"
+    gyp-runtime: "node-webkit"
+
+
+platform:
+  - x64
+
+install:
+  - ps: Update-NodeJsInstallation (Get-NodeJsLatestBuild $env:nodejs_version) $env:platform;
+  - ps: $env:Path += ";$(pwd)\node_modules\.bin";
+  # Check if we're building the latest tag, if so
+  # then we publish the binaries if tests pass.
+  - ps: >
+    if ($env:appveyor_repo_tag -match "true" -and ("$(git describe --tags --always HEAD)" -eq $env:appveyor_repo_tag_name)) {
+      $env:publish_binary = 1;
+    } else {
+      $env:publish_binary = 0;
+    }
+    true;
+  - ps: Remove-Item .\node_modules\ -Recurse -ErrorAction Ignore
+  - ps: npm install
+
+build_script:
+  - cmake-js compile -r=%CMAKE-RUNTIME% -v=%RUNTIME-VERSION%
+
+test_script:
+  - IF %PUBLISH_BINARY% == 1 (node-pre-gyp package --runtime=%GYP-RUNTIME% --target=%RUNTIME-VERSION%)
+  - IF %PUBLISH_BINARY% == 1 (.\node_modules\node-pre-gyp-github\bin\node-pre-gyp-github.js publish)
+
+deploy: OFF
