@@ -4,17 +4,15 @@ environment:
   NODE_PRE_GYP_GITHUB_TOKEN:
     secure: AV/BkHKfZKFyN0t/bdgA2pCgCnwp+mdZnEj/7xVVK0wtlNYeOPYIOViLG50nCrLR
 
-matrix:
-  # node.js
-  - nodejs_version: "7.4.0"
-    cmake_runtime: "node"
-    runtime_version: "7.4.0"
-    gyp_runtime: "node"
-  # Node Webkit
-  - nwjs_version: "0.20.0"
-    cmake_runtime: "nw"
-    runtime_version: "0.20.0"
-    gyp_runtime: "node-webkit"
+  matrix:
+    - nodejs_version: "7.4.0"
+      cmake_runtime: "node"
+      runtime_version: "7.4.0"
+      gyp_runtime: "node"
+    - nwjs_version: "0.20.0"
+      cmake_runtime: "nw"
+      runtime_version: "0.20.0"
+      gyp_runtime: "node-webkit"
 
 
 platform:
