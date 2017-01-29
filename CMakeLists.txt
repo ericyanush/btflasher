@@ -1,10 +1,7 @@
 cmake_minimum_required(VERSION 3.2)
 project(btflasher)
 
-if (CMAKE_SYSTEM_NAME MATCHES "linux")
-    # PIC is required on linux to link static libs to shared objects.
-    set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
-endif()
+set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 
 if (CMAKE_SYSTEM_NAME MATCHES "Windows")
     add_definitions(-DWIN32NATIVE)
