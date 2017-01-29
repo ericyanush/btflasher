@@ -21,7 +21,6 @@
     "remote_path": "{version}"
   },
   "scripts": {
-    "preinstall": "npm install node-pre-gyp node-pre-gyp-github",
     "install": "node-pre-gyp install --fallback-to-build=false || cmake-js compile"
   }
 }
