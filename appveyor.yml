@@ -7,14 +7,14 @@ environment:
 matrix:
   # node.js
   - nodejs_version: "7.4.0"
-    cmake-runtime: "node"
-    runtime-version: "7.4.0"
-    gyp-runtime: "node"
+    cmake_runtime: "node"
+    runtime_version: "7.4.0"
+    gyp_runtime: "node"
   # Node Webkit
   - nwjs_version: "0.20.0"
-    cmake-runtime: "nw"
-    runtime-version: "0.20.0"
-    gyp-runtime: "node-webkit"
+    cmake_runtime: "nw"
+    runtime_version: "0.20.0"
+    gyp_runtime: "node-webkit"
 
 
 platform:
@@ -45,10 +45,10 @@ install:
   - ps: npm install
 
 build_script:
-  - cmake-js compile -r=%CMAKE-RUNTIME% -v=%RUNTIME-VERSION%
+  - cmake-js compile -r=%CMAKE_RUNTIME% -v=%RUNTIME_VERSION%
 
 test_script:
-  - IF %PUBLISH_BINARY% == 1 (node-pre-gyp package --runtime=%GYP-RUNTIME% --target=%RUNTIME-VERSION%)
+  - IF %PUBLISH_BINARY% == 1 (node-pre-gyp package --runtime=%GYP_RUNTIME% --target=%RUNTIME_VERSION%)
   - IF %PUBLISH_BINARY% == 1 (.\node_modules\node-pre-gyp-github\bin\node-pre-gyp-github.js publish)
 
 deploy: OFF
