@@ -9,7 +9,8 @@ environment:
       cmake_runtime: "node"
       runtime_version: "7.4.0"
       gyp_runtime: "node"
-    - nwjs_version: "0.20.0"
+    - nodejs_version: "7.4.0"
+      nwjs_version: "0.20.0"
       cmake_runtime: "nw"
       runtime_version: "0.20.0"
       gyp_runtime: "node-webkit"
@@ -21,6 +22,7 @@ platform:
 install:
   - ps: Update-NodeJsInstallation (Get-NodeJsLatestBuild $env:nodejs_version) $env:platform;
   - ps: $env:Path += ";$(pwd)\node_modules\.bin";
+  - ps: choco install winflexbison
  
   # Check if we're building the latest tag, if so
   # then we publish the binaries if tests pass.
@@ -38,15 +40,22 @@ install:
       } else {
         "We're not publishing a binary" | Write-Host
       }
-      true;
-  - ps: Remove-Item .\node_modules\ -Recurse -ErrorAction Ignore
-  - ps: npm install
+      true; 
+  # ensure our submodules get pulled in
+  - ps: git submodule update -q --init --recursive 2>&1
+  # Garbage NPM warns cause appveyor to fail.
+  - ps: npm config set loglevel silent
+  - ps: npm install cmake-js node-pre-gyp node-pre-gyp-github nan
 
 build_script:
-  - cmake-js compile -r=%CMAKE_RUNTIME% -v=%RUNTIME_VERSION%
+  - cmake-js rebuild -r=%cmake_runtime% -v=%runtime_version%
 
 test_script:
-  - IF %PUBLISH_BINARY% == 1 (node-pre-gyp package --runtime=%GYP_RUNTIME% --target=%RUNTIME_VERSION%)
-  - IF %PUBLISH_BINARY% == 1 (.\node_modules\node-pre-gyp-github\bin\node-pre-gyp-github.js publish)
+  - ps: >
+      if ($env:publish_binary -eq 1) {
+        node-pre-gyp package --runtime=%gyp_runtime% --target=%runtime_version% 2>&1
+        node-pre-gyp-github publish 2>&1
+      }
+      true;
 
 deploy: OFF
