@@ -14,6 +14,11 @@ environment:
       cmake_runtime: "nw"
       runtime_version: "0.20.0"
       gyp_runtime: "node-webkit"
+    - nodejs_version: "7.2.0"
+      electron_version: "1.6.2"
+      cmake_runtime: "electron"
+      runtime_version: "1.6.2"
+      gyp_runtime: "electron"
 
 
 platform:

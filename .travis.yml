@@ -26,10 +26,15 @@ env:
       RUNTIME_VERSION: "7.2.0"
       GYP_RUNTIME: "node"
     - NODE_VERSION: "7.2.0"
-      NWJS_VERSION: "0.20.0"
+      NWJS_VERSION: "0.21.0"
       CMAKE_RUNTIME: "nw"
-      RUNTIME_VERSION: "0.20.0"
+      RUNTIME_VERSION: "0.21.0"
       GYP_RUNTIME: "node-webkit"
+    - NODE_VERSION: "7.2.0"
+      ELECTRON_VERTSON: "1.6.2"
+      CMAKE_RUNTIME: "electron"
+      RUNTIME_VERSION: "1.6.2"
+      GYP_RUNTIME: "electron"
 
 before_install:
   - rm -rf ~/.nvm/ && git clone --depth 1 https://github.com/creationix/nvm.git ~/.nvm
