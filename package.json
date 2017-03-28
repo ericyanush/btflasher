@@ -6,11 +6,13 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ericyanush/btflasher.git"
+    "url": "/Users/Eric/Developer/btflasher"
   },
-  "dependencies": {
+  "devDependencies": {
     "cmake-js": "^3.4.0",
     "nan": "^2.5.0",
+  },
+  "dependencies": {
     "node-pre-gyp": "^0.6.32",
     "node-pre-gyp-github": "^1.3.1"
   },
@@ -21,6 +23,6 @@
     "remote_path": "{version}"
   },
   "scripts": {
-    "install": "node-pre-gyp install --fallback-to-build=false || cmake-js compile"
+    "install": "node-pre-gyp reinstall --fallback-to-build=false || cmake-js compile"
   }
 }
