@@ -1,12 +1,12 @@
 {
   "name": "btflasher",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Native node module for flashing BrewTroller Boards",
   "license": "MIT",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "/Users/Eric/Developer/btflasher"
+    "url": "https://github.com/ericyanush/btflasher.git"
   },
   "devDependencies": {
     "cmake-js": "^3.4.0",
