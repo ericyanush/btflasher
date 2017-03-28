@@ -10,7 +10,7 @@
   },
   "devDependencies": {
     "cmake-js": "^3.4.0",
-    "nan": "^2.5.0",
+    "nan": "^2.5.0"
   },
   "dependencies": {
     "node-pre-gyp": "^0.6.32",
