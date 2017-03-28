@@ -1,6 +1,6 @@
 {
   "name": "btflasher",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Native node module for flashing BrewTroller Boards",
   "license": "MIT",
   "main": "index.js",
