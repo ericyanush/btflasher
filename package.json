@@ -19,8 +19,8 @@
   "binary": {
     "module_name": "btflasher",
     "module_path": "./build/Release",
-    "host": "https://github.com/ericyanush/btflasher/releases/",
-    "remote_path": "{version}/download/"
+    "host": "https://github.com/ericyanush/btflasher/releases/download/",
+    "remote_path": "{version}"
   },
   "scripts": {
     "install": "node-pre-gyp reinstall --fallback-to-build=false || cmake-js compile"
